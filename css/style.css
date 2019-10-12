@@ -28,8 +28,19 @@
     display: inline-block;
 }
 
-.car {
-    width: 150px;
-    height: 300px;
-    background-image: url(/img/simple-travel-car-top_view.svg);
+.user-car {
+    position: absolute;
+    top: 430px;
+    left: 30px;
+    border: 1px solid gray;
+    width: 85px;
+    height: 150px;
+    /*    background-image: url(/img/simple-travel-car-top_view.svg);*/
+}
+
+.bot-car {
+    position: absolute;
+    border: 1px solid red;
+    width: 85px;
+    height: 150px;
 }
