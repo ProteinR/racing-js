@@ -33,33 +33,20 @@
 
 .user-car {
     position: absolute;
-    top: 430px;
-    left: 30px;
-    border: 1px solid gray;
-    width: 85px;
-    height: 150px;
+    border: 1px solid green;
+    /* transition: all 0.3s linear; */
+    transition: transform 0.3s ease-in-out;
+    width: 75px;
+    height: 140px;
     z-index: 99;
     /* background-image: url(../img/simple-travel-car-top_view.svg); */
-    background-size: contain;
+    /* background-size: contain; */
 }
 
 .bot-car {
     position: absolute;
     border: 1px solid red;
-    width: 85px;
-    height: 150px;
+    width: 75px;
+    height: 140px;
     z-index: 99;
-}
-
-/* .user-car:before {
-    content: "";
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    /* background-size: contain; */
-    top: 0;
-    left: 0;
-    z-index: -1; */
-    /* background: url(../img/simple-travel-car-top_view.svg) 0 0 repeat; */
-    /* transform: rotate(-90deg); */
 }
