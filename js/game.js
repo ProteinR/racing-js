@@ -1,36 +1,40 @@
+let templates = document.querySelector('.templates');
 let gameWindow = document.querySelector('.game-window');
 let road = document.querySelector('.road');
-let oldRoad = document.querySelector('.road-block');
+let oldRoad = document.querySelector('.road-block').cloneNode(true);
 let gameWindowHeigt = parseInt(gameWindow.clientHeight);
-let botCars = document.querySelectorAll('.bot-car');
+let botCars = templates.querySelectorAll('.bot-car');
 let userCar = document.querySelector('.user-car');
-let botCarsOnScreen = []; //all cars on screen
 let throughtTime = 0; //cars will spawn each third road block. Each new road block generate - it increment value
 let userCarSpeed = 0;
 let timerForDirection;
 let timerForIncSpeed;
+let dtp = false;
+let playGame; //timer
 
 // инициализируем экран блоками дороги
 function initialGenerateRoad() {
-    // let firstRoadBlock = road.firstElementChild.cloneNode(true);
-    // firstRoadBlock.style.top = parseInt(firstRoadBlock.style.top) - 200 + 'px';
-    // road.insertBefore(firstRoadBlock, road.firstElementChild);
-    // console.log(firstRoadBlock);
-
+    let firstInitRoadBlock = templates.querySelector('.road-block').cloneNode(true);
+    firstInitRoadBlock.style.display = "block";
+    road.append(firstInitRoadBlock);
     for (let i = 0; i < 2; i++) {
-        let nextRoadBlock = road.lastElementChild.cloneNode(true);
-        nextRoadBlock.style.top = parseInt(road.lastElementChild.style.top) + 200 + 'px';
-        road.insertBefore(nextRoadBlock, road.lastElementChild.nextSibling);
+        newRoadBLock = templates.querySelector('.road-block').cloneNode(true);
+        newRoadBLock.style.display = "block";
+        newRoadBLock.style.top = parseInt(road.lastChild.style.top) + 200 + 'px';
+        road.append(newRoadBLock);
     }
 }
 
 function move() {
     let roadBlocks = gameWindow.getElementsByClassName('road-block');
+    let botCarsOnScreen = road.getElementsByClassName('bot-car');
+
     for (let i = 0; i < roadBlocks.length; i++) {
-        roadBlocks[i].style.top = parseInt(roadBlocks[i].style.top) + 2 + userCarSpeed + 'px';
+        roadBlocks[i].style.top = parseInt(roadBlocks[i].style.top) + 2 + Math.floor(userCarSpeed) + 'px';
     }
     for (let i = 0; i < botCarsOnScreen.length; i++) {
-        botCarsOnScreen[i].style.top = parseInt(botCarsOnScreen[i].style.top) + 1 + userCarSpeed + 'px';
+        botCarsOnScreen[i].style.top = parseInt(botCarsOnScreen[i].style.top) + 1 + Math.floor(userCarSpeed) + 'px';
+        // checkForDpt(userCar, botCarsOnScreen[i]);
     }
 } // передвижение дороги вниз 
 
@@ -39,41 +43,59 @@ function newRoadBlockGenerate() {
     let firstRoadBlock = road.firstElementChild;
     let trafficMap;
 
-    // console.log(firstRoadBlock.style.top);
     if (parseInt(firstRoadBlock.style.top) > -150) {
         let newRoad = oldRoad.cloneNode(true); //скопировали верхний блок дороги
+        newRoad.style.display = 'block';
         newRoad.style.top = parseInt(firstRoadBlock.style.top) - 200 + 'px'; //задали ему координаты выше верхнего блока
-        // newRoad.style.zindex = 95;
         road.insertBefore(newRoad, firstRoadBlock); //разместили
 
         trafficMap = generateTrafficMap();
-        // console.log('trafficMap = ' + trafficMap);
         drawNewCars(trafficMap, newRoad);
+        throughtTime++; 
     }
 }
 
 function removeOldRoadBlock() {
-    let allRoadBlocks = [];
-    allRoadBlocks = Array.prototype.slice.call(document.querySelectorAll('.road-block'));
-
-    if (allRoadBlocks.length > 5) {
-        console.log('Remove old road');
-        allRoadBlocks[allRoadBlocks.length - 1].remove();
+    let lastRoadBlock = road.querySelectorAll('.road-block')[road.querySelectorAll('.road-block').length-1];
+    if (parseInt(lastRoadBlock.style.top) > parseInt(gameWindow.getBoundingClientRect().bottom)) {
+        lastRoadBlock.remove();
         removeOldCar();
     }
-    // while(allRoadBlocks.length > 4) allRoadBlocks[length].remove(); 
-
 } //удаление старых блоков
 
 function removeOldCar() {
-    // console.log('CAAR height moore . Remove '+car.style.top)
+    botCarsOnScreen = road.getElementsByClassName('bot-car');
     for (let i = 0; i < botCarsOnScreen.length; i++) {
         if (parseInt(botCarsOnScreen[i].style.top) > gameWindowHeigt) {
-            // console.log('CAAR height moore . Remove '+botCarsOnScreen[i])
+            console.log('CAAR height moore . Remove '+botCarsOnScreen[i])
             botCarsOnScreen[i].remove();
         }
     }
 }
+
+function checkForDpt(obj1, obj2) {
+    if ( obj1.offsetLeft <= obj2.offsetLeft + obj2.offsetWidth && 
+    obj1.offsetLeft + obj1.offsetWidth  >=  obj2.offsetLeft && 
+    obj1.offsetTop + obj1.offsetHeight >=  obj2.offsetTop && 
+    obj1.offsetTop <= obj2.offsetTop +  obj2.offsetHeight ) {
+        dtp = true;
+        result = confirm('Try again?');
+        clearInterval(playGame);
+        if (result) location.href=location.href;
+    }
+}
+
+function startNewGame() {
+    while (road.firstChild) {
+        road.removeChild(road.firstChild);
+    }
+    // botCarsOnScreen.splice(0, botCarsOnScreen.length-1);
+    console.log(botCarsOnScreen);
+    testFuncStartGame();
+    
+    // mainGameFunction();
+}
+    
 
 function randomInteger(min, max) {
     min = Math.ceil(min);
@@ -95,19 +117,15 @@ function generateTrafficMap() {
     let trafficCount = randomInteger(1, 4);
     let trafficMap = [0, 0, 0, 0] //расположение машин в блоке
     let sum = 0;
-    throughtTime++;
 
     if (throughtTime % 3 != 0) return trafficMap;
-
-    // if (traffic) {
     function fillTraffic() {
         for (let i = 0; i < 4; i++) {
             trafficMap[i] = randomInteger(0, 2);
         }
     }
 
-    if (botCarsOnScreen.count > 6) return trafficMap;
-
+    // if (botCarsOnScreen.count > 6) return trafficMap;
     while (arraySum(trafficMap) != trafficCount) {
         fillTraffic();
     }
@@ -125,7 +143,6 @@ function drawNewCars(trafficMap, newRoad) {
             let randLeftCoord = randomInteger(-20, 20);
             newBotCar.style.top = parseInt(newBotCar.style.top) - randTopCoord + 'px';
             newBotCar.style.left = parseInt(newBotCar.style.left) + randLeftCoord + 'px';
-            botCarsOnScreen.push(newBotCar);
             road.append(newBotCar);
         }
     }
@@ -149,6 +166,11 @@ function userCarTurn(direction, speed) {
     }
 
     timerForDirection = setInterval(() => {
+        if(direction == 'left') {
+            if(userCar.getBoundingClientRect().left < gameWindow.getBoundingClientRect().x + 3) return;
+        } else {
+            if(userCar.getBoundingClientRect().right + 3 > gameWindow.getBoundingClientRect().right) return;
+        }
         if (speed != 0) speed = (speed + 1)/2;
         if (speed == 0) speed++;
         userCar.style.left = parseInt(userCar.style.left) + n * speed + 'px';
@@ -163,7 +185,7 @@ function increaseUserCarSpeed() {
 
 function decreaseUserCarSpeed() {
     timerForIncSpeed = setInterval(() => {
-        if (userCarSpeed > 0) {
+        if (userCarSpeed > 0.2) {
             userCarSpeed -= 0.1;
         }
     }, 10);
@@ -204,7 +226,14 @@ document.addEventListener('keyup', function (event) {
 });
 
 
+function testFuncStartGame(){
+    initialGenerateRoad();
+}
 
-initialGenerateRoad();
-roadMove();
-setInterval(roadMove, 15);
+function mainGameFunction() {
+    initialGenerateRoad();
+    roadMove();
+    playGame = setInterval(roadMove, 15);
+}
+
+mainGameFunction();
