@@ -11,6 +11,9 @@ let timerForDirection;
 let timerForIncSpeed;
 let dtp = false;
 let playGame; //timer
+let scoreTimer;
+let gameScore = 0;
+let userName = '';
 
 // инициализируем экран блоками дороги
 function initialGenerateRoad() {
@@ -34,7 +37,7 @@ function move() {
     }
     for (let i = 0; i < botCarsOnScreen.length; i++) {
         botCarsOnScreen[i].style.top = parseInt(botCarsOnScreen[i].style.top) + 1 + Math.floor(userCarSpeed) + 'px';
-        // checkForDpt(userCar, botCarsOnScreen[i]);
+        checkForDpt(userCar, botCarsOnScreen[i]);
     }
 } // передвижение дороги вниз 
 
@@ -67,7 +70,7 @@ function removeOldCar() {
     botCarsOnScreen = road.getElementsByClassName('bot-car');
     for (let i = 0; i < botCarsOnScreen.length; i++) {
         if (parseInt(botCarsOnScreen[i].style.top) > gameWindowHeigt) {
-            console.log('CAAR height moore . Remove '+botCarsOnScreen[i])
+            // console.log('CAAR height moore . Remove '+botCarsOnScreen[i])
             botCarsOnScreen[i].remove();
         }
     }
@@ -79,10 +82,24 @@ function checkForDpt(obj1, obj2) {
     obj1.offsetTop + obj1.offsetHeight >=  obj2.offsetTop && 
     obj1.offsetTop <= obj2.offsetTop +  obj2.offsetHeight ) {
         dtp = true;
+        addScoreToHistory();
         result = confirm('Try again?');
         clearInterval(playGame);
+        clearInterval(scoreTimer);
         if (result) location.href=location.href;
     }
+}
+
+function addScoreToHistory() {
+    let uniqueId = Math.round(new Date() / 1000); // текущая дата в секундах
+    let oldResult = JSON.parse(localStorage.gameScores || "{}");
+    let newResults = {
+        name: userName,
+        score: gameScore
+    } 
+    oldResult[uniqueId] = newResults;
+    let newResultSting = JSON.stringify(oldResult);
+    localStorage.setItem('gameScores', newResultSting);
 }
 
 function startNewGame() {
@@ -90,7 +107,7 @@ function startNewGame() {
         road.removeChild(road.firstChild);
     }
     // botCarsOnScreen.splice(0, botCarsOnScreen.length-1);
-    console.log(botCarsOnScreen);
+    // console.log(botCarsOnScreen);
     testFuncStartGame();
     
     // mainGameFunction();
@@ -201,14 +218,14 @@ document.addEventListener('keydown', function (event) {
         if (!event.repeat) userCarTurn('right', userCarSpeed);
     }
     if (event.code == 'ArrowDown') {
-        console.log(userCarSpeed);
+        // console.log(userCarSpeed);
 
         if (!event.repeat) {
             decreaseUserCarSpeed();
         }
     }
     if (event.code == 'ArrowUp') {
-        console.log(userCarSpeed);
+        // console.log(userCarSpeed);
         if (!event.repeat) {
             increaseUserCarSpeed();
         }
@@ -230,10 +247,24 @@ function testFuncStartGame(){
     initialGenerateRoad();
 }
 
+function increseScore() {
+    gameScore = gameScore + 1 + userCarSpeed;
+    // console.log(Math.round(gameScore));
+}
+
+function getTopScores() {
+    let oldResult = JSON.parse(localStorage.gameScores || "{}");
+    sorterByScoreResults = Object.values(oldResult).sort((a, b) => a.score > b.score ? 1 : -1);
+    console.log(sorterByScoreResults.slice(-3));
+}
+
 function mainGameFunction() {
+    getTopScores();
     initialGenerateRoad();
     roadMove();
     playGame = setInterval(roadMove, 15);
+    scoreTimer = setInterval(increseScore, 1000);
 }
 
+userName = prompt("Введите ваше имя:")
 mainGameFunction();

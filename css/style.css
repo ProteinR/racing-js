@@ -1,3 +1,9 @@
+body {
+    background-image: url(../img/382262_OGBWFErc9P_02_09.jpg);
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
 .game-window {
     width: 600px;
     min-height: 700px;
@@ -32,8 +38,12 @@
 }
 
 .user-car {
+    background-image: url(../img/user-car.png);
+    background-size: 105%;
+    background-position: center;
     position: absolute;
     border: 1px solid green;
+    border-radius: 100px / 50px;
     /* transition: all 0.3s linear; */
     transition: transform 0.3s ease-in-out;
     width: 75px;
@@ -44,6 +54,12 @@
 }
 
 .bot-car {
+    background-image: url(../img/bot-car.png);
+    background-size: 155%;
+    background-repeat: no-repeat;
+    background-position: center;
+    border-radius: 100px / 50px;
+    /* background-s */
     position: absolute;
     border: 1px solid red;
     width: 75px;
