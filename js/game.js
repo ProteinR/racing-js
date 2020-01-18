@@ -54,12 +54,12 @@ function newRoadBlockGenerate() {
 
         trafficMap = generateTrafficMap();
         drawNewCars(trafficMap, newRoad);
-        throughtTime++; 
+        throughtTime++;
     }
 }
 
 function removeOldRoadBlock() {
-    let lastRoadBlock = road.querySelectorAll('.road-block')[road.querySelectorAll('.road-block').length-1];
+    let lastRoadBlock = road.querySelectorAll('.road-block')[road.querySelectorAll('.road-block').length - 1];
     if (parseInt(lastRoadBlock.style.top) > parseInt(gameWindow.getBoundingClientRect().bottom)) {
         lastRoadBlock.remove();
         removeOldCar();
@@ -77,16 +77,16 @@ function removeOldCar() {
 }
 
 function checkForDpt(obj1, obj2) {
-    if ( obj1.offsetLeft <= obj2.offsetLeft + obj2.offsetWidth && 
-    obj1.offsetLeft + obj1.offsetWidth  >=  obj2.offsetLeft && 
-    obj1.offsetTop + obj1.offsetHeight >=  obj2.offsetTop && 
-    obj1.offsetTop <= obj2.offsetTop +  obj2.offsetHeight ) {
+    if (obj1.offsetLeft <= obj2.offsetLeft + obj2.offsetWidth &&
+        obj1.offsetLeft + obj1.offsetWidth >= obj2.offsetLeft &&
+        obj1.offsetTop + obj1.offsetHeight >= obj2.offsetTop &&
+        obj1.offsetTop <= obj2.offsetTop + obj2.offsetHeight) {
         dtp = true;
         addScoreToHistory();
         result = confirm('Try again?');
         clearInterval(playGame);
         clearInterval(scoreTimer);
-        if (result) location.href=location.href;
+        if (result) location.href = location.href;
     }
 }
 
@@ -96,7 +96,7 @@ function addScoreToHistory() {
     let newResults = {
         name: userName,
         score: gameScore
-    } 
+    }
     oldResult[uniqueId] = newResults;
     let newResultSting = JSON.stringify(oldResult);
     localStorage.setItem('gameScores', newResultSting);
@@ -109,10 +109,10 @@ function startNewGame() {
     // botCarsOnScreen.splice(0, botCarsOnScreen.length-1);
     // console.log(botCarsOnScreen);
     testFuncStartGame();
-    
+
     // mainGameFunction();
 }
-    
+
 
 function randomInteger(min, max) {
     min = Math.ceil(min);
@@ -136,6 +136,7 @@ function generateTrafficMap() {
     let sum = 0;
 
     if (throughtTime % 3 != 0) return trafficMap;
+
     function fillTraffic() {
         for (let i = 0; i < 4; i++) {
             trafficMap[i] = randomInteger(0, 2);
@@ -177,18 +178,18 @@ function userCarTurn(direction, speed) {
 
     if (direction == 'left') {
         n *= -1;
-        userCar.style.transform = 'rotate(' + - 20/(speed+1) + 'deg)';
+        userCar.style.transform = 'rotate(' + -20 / (speed + 1) + 'deg)';
     } else {
-        userCar.style.transform = 'rotate(' + 20/(speed+1) + 'deg)';
+        userCar.style.transform = 'rotate(' + 20 / (speed + 1) + 'deg)';
     }
 
     timerForDirection = setInterval(() => {
-        if(direction == 'left') {
-            if(userCar.getBoundingClientRect().left < gameWindow.getBoundingClientRect().x + 3) return;
+        if (direction == 'left') {
+            if (userCar.getBoundingClientRect().left < gameWindow.getBoundingClientRect().x + 3) return;
         } else {
-            if(userCar.getBoundingClientRect().right + 3 > gameWindow.getBoundingClientRect().right) return;
+            if (userCar.getBoundingClientRect().right + 3 > gameWindow.getBoundingClientRect().right) return;
         }
-        if (speed != 0) speed = (speed + 1)/2;
+        if (speed != 0) speed = (speed + 1) / 2;
         if (speed == 0) speed++;
         userCar.style.left = parseInt(userCar.style.left) + n * speed + 'px';
     }, 5);
@@ -243,7 +244,7 @@ document.addEventListener('keyup', function (event) {
 });
 
 
-function testFuncStartGame(){
+function testFuncStartGame() {
     initialGenerateRoad();
 }
 
@@ -256,15 +257,28 @@ function getTopScores() {
     let oldResult = JSON.parse(localStorage.gameScores || "{}");
     sorterByScoreResults = Object.values(oldResult).sort((a, b) => a.score > b.score ? 1 : -1);
     console.log(sorterByScoreResults.slice(-3));
+
+    return sorterByScoreResults.slice(-3);
+}
+
+function fillTopTable(topScores) {
+    let table = document.querySelector('table');
+
+    for (let row = 1; row < topScores.length+1; row++) {
+        table.rows[row].cells[1].innerText = topScores[row-1].name;
+        table.rows[row].cells[2].innerText = parseInt(topScores[row-1].score);
+    }
 }
 
 function mainGameFunction() {
-    getTopScores();
+    let top3 = getTopScores();
+    fillTopTable(top3);
     initialGenerateRoad();
     roadMove();
     playGame = setInterval(roadMove, 15);
     scoreTimer = setInterval(increseScore, 1000);
 }
 
-userName = prompt("Введите ваше имя:")
+userName = prompt("Введите ваше имя:", 'user') 
+userName = userName == '' || userName == null ? 'noname' : userName;
 mainGameFunction();

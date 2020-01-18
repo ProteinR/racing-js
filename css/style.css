@@ -38,31 +38,56 @@ body {
 }
 
 .user-car {
-    background-image: url(../img/user-car.png);
-    background-size: 105%;
-    background-position: center;
+    /* background-image: url(../img/user-car.png); */
+    /* background-size: 105%; */
+    /* background-position: center; */
     position: absolute;
     border: 1px solid green;
-    border-radius: 100px / 50px;
+    /* border-radius: 100px / 50px; */
     /* transition: all 0.3s linear; */
     transition: transform 0.3s ease-in-out;
-    width: 75px;
-    height: 140px;
+    width: 55px;
+    height: 110px;
     z-index: 99;
     /* background-image: url(../img/simple-travel-car-top_view.svg); */
     /* background-size: contain; */
 }
 
 .bot-car {
-    background-image: url(../img/bot-car.png);
-    background-size: 155%;
-    background-repeat: no-repeat;
-    background-position: center;
-    border-radius: 100px / 50px;
+    /* background-image: url(../img/bot-car.png); */
+    /* background-size: 155%; */
+    /* background-repeat: no-repeat; */
+    /* background-position: center; */
+    /* border-radius: 100px / 50px; */
     /* background-s */
     position: absolute;
     border: 1px solid red;
-    width: 75px;
-    height: 140px;
+    width: 55px;
+    height: 110px;
     z-index: 99;
+}
+
+.image-bot-car {
+    top: -10px;
+    position: relative;
+    height: 118%;
+    width: 138%;
+    left: -8px;
+}
+
+.image-user-car {
+    top: -16px;
+    position: relative;
+    height: 126%;
+    width: 152%;
+    left: -15px;
+}
+
+.records {
+    color: white;
+    margin: 45px 0 0 45px;
+    position: absolute;
+    width: 150px;
+    left: 0;
+    top: 0;
 }
