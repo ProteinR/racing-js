@@ -14,6 +14,7 @@ let playGame; //timer
 let scoreTimer;
 let gameScore = 0;
 let userName = '';
+let speedInKm = 0;
 
 // инициализируем экран блоками дороги
 function initialGenerateRoad() {
@@ -106,11 +107,7 @@ function startNewGame() {
     while (road.firstChild) {
         road.removeChild(road.firstChild);
     }
-    // botCarsOnScreen.splice(0, botCarsOnScreen.length-1);
-    // console.log(botCarsOnScreen);
     testFuncStartGame();
-
-    // mainGameFunction();
 }
 
 
@@ -156,9 +153,8 @@ function drawNewCars(trafficMap, newRoad) {
         if (trafficMap[i] != 0) {
             let newBotCar = botCars[i].cloneNode(true);
             newBotCar.style.display = 'block';
-            // newBotCar.style.zindex = 99;
             let randTopCoord = randomInteger(170, 230);
-            let randLeftCoord = randomInteger(-20, 20);
+            let randLeftCoord = randomInteger(-18, 28);
             newBotCar.style.top = parseInt(newBotCar.style.top) - randTopCoord + 'px';
             newBotCar.style.left = parseInt(newBotCar.style.left) + randLeftCoord + 'px';
             road.append(newBotCar);
@@ -197,7 +193,9 @@ function userCarTurn(direction, speed) {
 
 function increaseUserCarSpeed() {
     timerForIncSpeed = setInterval(() => {
-        userCarSpeed += 0.5;
+        if (speedInKm < 235) {
+            userCarSpeed += 0.5;
+        }
     }, 300);
 }
 
@@ -210,26 +208,27 @@ function decreaseUserCarSpeed() {
 }
 
 document.addEventListener('keydown', function (event) {
-    if (event.code == 'ArrowLeft') {
+    if (event.code == 'ArrowLeft' || event.code == 'KeyA') {
         if (!event.repeat) {
             userCarTurn('left', userCarSpeed);
         }
     }
-    if (event.code == 'ArrowRight') {
+    if (event.code == 'ArrowRight' || event.code == 'KeyD') {
         if (!event.repeat) userCarTurn('right', userCarSpeed);
     }
-    if (event.code == 'ArrowDown') {
-        // console.log(userCarSpeed);
-
+    if (event.code == 'ArrowDown'  || event.code == 'KeyS') {
         if (!event.repeat) {
             decreaseUserCarSpeed();
         }
+        speedInKm = ((userCarSpeed * 10) + 60) * 1.25;
+        range_change_event(speedInKm * 100 / 240);
     }
-    if (event.code == 'ArrowUp') {
-        // console.log(userCarSpeed);
+    if (event.code == 'ArrowUp' || event.code == 'KeyW') {
         if (!event.repeat) {
             increaseUserCarSpeed();
         }
+        speedInKm = ((userCarSpeed * 10) + 60) * 1.25;
+        range_change_event(speedInKm * 100 / 240);
     }
 });
 
@@ -243,42 +242,42 @@ document.addEventListener('keyup', function (event) {
     if (event.code == 'ArrowRight') {}
 });
 
-
-function testFuncStartGame() {
-    initialGenerateRoad();
-}
+// function testFuncStartGame() {
+//     initialGenerateRoad();
+// }
 
 function increseScore() {
     gameScore = gameScore + 1 + userCarSpeed;
-    // console.log(Math.round(gameScore));
+    document.querySelector("p.current-score").innerText = parseInt(gameScore);
 }
 
 function getTopScores() {
     let oldResult = JSON.parse(localStorage.gameScores || "{}");
     sorterByScoreResults = Object.values(oldResult).sort((a, b) => a.score > b.score ? 1 : -1);
-    console.log(sorterByScoreResults.slice(-3));
+    console.log(sorterByScoreResults.slice(-3).reverse());
 
-    return sorterByScoreResults.slice(-3);
+    return sorterByScoreResults.slice(-3).reverse();
 }
 
 function fillTopTable(topScores) {
     let table = document.querySelector('table');
 
-    for (let row = 1; row < topScores.length+1; row++) {
-        table.rows[row].cells[1].innerText = topScores[row-1].name;
-        table.rows[row].cells[2].innerText = parseInt(topScores[row-1].score);
+    for (let row = 1; row < topScores.length + 1; row++) {
+        table.rows[row].cells[1].innerText = topScores[row - 1].name;
+        table.rows[row].cells[2].innerText = parseInt(topScores[row - 1].score);
     }
 }
 
 function mainGameFunction() {
     let top3 = getTopScores();
     fillTopTable(top3);
+    range_change_event(30)
     initialGenerateRoad();
     roadMove();
     playGame = setInterval(roadMove, 15);
     scoreTimer = setInterval(increseScore, 1000);
 }
 
-userName = prompt("Введите ваше имя:", 'user') 
+userName = prompt("Введите ваше имя:", 'user')
 userName = userName == '' || userName == null ? 'noname' : userName;
 mainGameFunction();
